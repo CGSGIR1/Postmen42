@@ -9,32 +9,36 @@ class EmailReader:
         "date": "date", "дата": "date", "data": "date",
     }
     def read(self, file_path):
-        print(self.KEY_WORDS["от кого"])
+        subject = ""
+        recipient = ""
+        source_path = file_path
+        body = ""
+        sender = ""
+        correct = False
         try:
-            subject = ""
-            recipient = ""
-            source_path = file_path
-            body = ""
             with open(file_path, 'r') as file:
                 for line in file:
                     if ":" in line:
-                        component = line[:line.index(":")].strip()
-                        if self.KEY_WORDS[component.lower()] == "subject":
+                        key = self.KEY_WORDS.get(line[:line.index(":")].strip().lower())
+                        if key == "subject":
                             subject = line[line.index(":")+1:].strip()
-                        elif self.KEY_WORDS[component.lower()] == "from":
-                            pass
-                        elif self.KEY_WORDS[component.lower()] == "to":
+                        elif key == "from":
+                            sender = line[line.index(":")+1:].strip()
+                        elif key == "to":
                             recipient = line[line.index(":")+1:].strip()
-                        elif self.KEY_WORDS[component.lower()] == "date":
+                        elif key == "date":
                             pass
                         else:
-                            raise ValueError("Непредвиденный заголовок письма: " + component.lower())
+                            raise ValueError("Непредвиденный заголовок письма: " + key)
                     else:
                         body = line + file.read()
-            return Email(recipient, subject, body, source_path)
+                        break
+            correct = True
         except ValueError as e:
             print(e)
         except FileNotFoundError as e:
             print("Ошибка чтения файла: такого файла не существует")
         except Exception as e:
             print("Ошибка чтения файла")
+        finally:
+            return Email(recipient, sender, subject, body, source_path, correct)
