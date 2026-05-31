@@ -7,7 +7,7 @@ if __name__ == "__main__":
     f1 = FileMover()
     for i in range(1, 110):
         try:
-            path = "inbox/mail_" + "0" * (4 - len(str(i))) + str(i) + ".txt"
+            path = "../inbox/mail_" + "0" * (4 - len(str(i))) + str(i) + ".txt"
             print(path)
             em = t1.read(path)
         except Exception as e:

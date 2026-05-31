@@ -3,11 +3,11 @@ import shutil
 
 class FileMover:
     def __init__(self):
-        if Path("output").exists():
-            shutil.rmtree(Path("output"))
+        if Path("../output").exists():
+            shutil.rmtree(Path("../output"))
 
     def move_files(self, email, category):
-        folder = Path("output") / category
+        folder = Path("../output") / category
         folder.mkdir(parents=True, exist_ok=True)
         src = Path(email.source_path)
         dst = folder / src.name
