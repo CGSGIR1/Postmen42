@@ -1,23 +1,36 @@
+import argparse
+from pathlib import Path
 from EmailReader import EmailReader
 from Classifier import Classifier
 from FileMover import FileMover
+from Logger import Logger
+import logging
+log = logging.getLogger(__name__)
+def main():
+    parser = argparse.ArgumentParser(description="Сортировщик писем")
+    parser.add_argument("--input", default="../inbox", help="папка с письмами")
+    parser.add_argument("--output", default="../", help="путь для папки")
+    parser.add_argument("--debug", action="store_true", help="режим debug")
+    args = parser.parse_args()
+    logger = Logger(args.debug)
+    if not Path(args.input).exists():
+        log.error(f"Директория {args.input} не найдена")
+        return
+    log.info(f"Директория input: {args.input}, директория output: {args.output}output")
+
+    mover = FileMover(args.output)
+    reader = EmailReader()
+    classifier = Classifier()
+
+
+    for path in Path(args.input).iterdir():
+        if path.is_file():
+            email = reader.read(path)
+            category = classifier.classify(email)
+            logger.email_log(email, category)
+            mover.move_files(email, category)
+
+    log.info(logger.result_report())
+
 if __name__ == "__main__":
-    t1 = EmailReader()
-    c1 = Classifier()
-    f1 = FileMover()
-    for i in range(1, 110):
-        try:
-            path = "../inbox/mail_" + "0" * (4 - len(str(i))) + str(i) + ".txt"
-            print(path)
-            em = t1.read(path)
-        except Exception as e:
-            print(e)
-        else:
-            print("New email: " + str(i))
-            print("SUB: " + em.subject)
-            print("REC: " + em.recipient)
-            print("BOD: " + em.body[:20].strip())
-            cat = c1.classify(em)
-            print("CAT: " + cat)
-            f1.move_files(em, cat)
-        print("-----------------------")
+    main()

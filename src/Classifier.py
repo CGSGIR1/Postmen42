@@ -1,3 +1,5 @@
+import logging
+log = logging.getLogger(__name__)
 class Classifier:
     RULES = {
     "Spam": [
@@ -126,5 +128,9 @@ class Classifier:
             email_category = "Urgent"
         if coeffs["Spam"] >= 3:
             email_category = "Spam"
+        if email_category == "Unclear":
+            log.warning(f"Для письма {email.source_path} не удалось определить категорию")
+        else:
+            log.debug(f"Для письма {email.source_path} установлена категория: {email_category} с баллом: {coeffs[max_category]}")
         return email_category
 

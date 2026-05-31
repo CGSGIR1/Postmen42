@@ -1,5 +1,6 @@
 from Email import Email
-
+import logging
+log = logging.getLogger(__name__)
 
 class EmailReader:
     KEY_WORDS = {
@@ -35,10 +36,10 @@ class EmailReader:
                         break
             correct = True
         except ValueError as e:
-            print(e)
+            log.warning(f"Ошибка для письма: {file_path}: {e}")
         except FileNotFoundError as e:
-            print("Ошибка чтения файла: такого файла не существует")
+            log.error(f"Ошибка чтения файла, такого файла не существует: {file_path}: {e}")
         except Exception as e:
-            print("Ошибка чтения файла")
+            log.error(f"Ошибка чтения файла: {file_path}: {e}")
         finally:
             return Email(recipient, sender, subject, body, source_path, correct)
