@@ -2,18 +2,12 @@ class Classifier:
     RULES = {
     "Spam": [
         "выиграли", "победитель", "приз", "розыгрыш", "скидка 90%", "только сегодня",
-        "эксклюзивная акция", "подтвердите личность", "введите логин и пароль",
-        "введите данные карты", "перейдите по ссылке", "аккаунт будет заблокирован",
-        "подозрительный вход", "немедленно подтвердите", "verify", "exclusive offer",
-        "limited time", "totally-not-spam", "cdn-service.net", "vpn-update",
-        "пароль истекает", "обновите пароль", "установка обязательна",
-        "установите новый клиент", "бесплатно", "поздравляем", "вы выиграли",
-        "http://secure", "http://corp-password", "prize", "confirm your identity",
-    ],
-    "Unclear": [
-        "???", "см. вложение", "otpravleno s iphone",
-        "без темы", "(no subject)", "если вопрос не к вам — перенаправьте",
-        "ok", "ок", "понял", "хорошо", "ясно", "пересылаю",
+        "эксклюзивная акция",
+        "введите данные карты", "перейдите по ссылке",
+        "exclusive offer",
+        "limited time", "totally-not-spam",
+        "бесплатно", "поздравляем",
+         "prize", "confirm your identity",
     ],
     "Tech": [
         "ошибка 500", "error 500", "не отвечает", "не запускается", "зависает",
@@ -75,7 +69,7 @@ class Classifier:
         "остановлен бизнес-процесс", "полностью заблокированы",
         "эскалация", "escalation",
     ],
-    "repeat": [
+    "Repeat": [
         "обращаемся повторно", "повторный запрос", "это уже второй запрос",
         "проблема не устранена", "по-прежнему недоступен", "нужен статус",
         "висит без ответа", "заявка висит", "follow up", "followup",
@@ -83,7 +77,7 @@ class Classifier:
         "всё ещё", "до сих пор не", "повторно направляю",
         "уже третий раз", "reminder", "ping",
     ],
-    "docs": [
+    "Docs": [
         "договор", "контракт", "соглашение", "регламент",
         "приложение к договору", "спецификация", "во вложении",
         "прикрепил", "вложение", "attachment",
@@ -91,7 +85,7 @@ class Classifier:
         "направляем документ", "передаём на рассмотрение",
         "ознакомьтесь", "документация", "сопроводительные документы",
     ],
-    "client": [
+    "Client": [
         "клиент обращается", "запрос от клиента", "жалоба клиента",
         "внешний пользователь", "внешний партнёр",
         "не может зарегистрироваться", "кнопка не работает",
@@ -114,16 +108,23 @@ class Classifier:
             return "Unknown"
         if email.recipient == "":
             return "Draft"
-        email_category = "Unknown"
+        email_category = "Unclear"
         coeffs = dict()
         for category, words in self.RULES.items():
             coeffs[category] = 0
         self._search(email.subject, coeffs, self.SUBJECT_COEFF)
         self._search(email.body, coeffs, self.BODY_COEFF)
+
+        if "no-reply" in email.sender:
+            coeffs["Auto"] += 999
+
         max_category = max(coeffs, key=coeffs.get)
 
-        if coeffs[max_category] != 0:
+        if coeffs[max_category] > 1:
             email_category = max_category
-
+        if coeffs["Urgent"] >= 2:
+            email_category = "Urgent"
+        if coeffs["Spam"] >= 3:
+            email_category = "Spam"
         return email_category
 
