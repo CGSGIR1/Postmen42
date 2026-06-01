@@ -33,7 +33,7 @@ def load_from_output(output_dir):
 def train(input_dir="../inbox", model_path="../ml_model.joblib", output_dir="../output"):
     if not Path(output_dir).exists():
         log.info("Папка output не найдена — запускаю основную программу...")
-        subprocess.run([sys.executable, "main.py", "--input", input_dir, "--output", "./"])
+        subprocess.run([sys.executable, "main.py", "--input", input_dir, "--output", "../"])
     if not Path(output_dir).exists():
         log.error("Не удалось получить папку output. Запустите основную программу вручную.")
         return

@@ -18,7 +18,6 @@ def main():
     parser.add_argument("--debug", action="store_true", help="режим debug")
     parser.add_argument("--ml", action="store_true", help="использовать ML-классификатор вместо правил")
     args = parser.parse_args()
-
     logger = Logger(args.debug)
 
     if not Path(args.input).exists():
@@ -50,12 +49,12 @@ def main():
 
     log.info(logger.result_report())
 
-    if Path("labels.csv").exists():
-        true_labels = load_true_labels("labels.csv")
+    if Path("../labels.csv").exists():
+        true_labels = load_true_labels("../labels.csv")
         if true_labels:
             overall, per_class = compute_metrics(true_labels, predicted_labels)
             if overall:
-                print_report(overall, per_class)
+                log.info(print_report(overall, per_class))
 
 if __name__ == "__main__":
     main()
