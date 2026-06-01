@@ -4,7 +4,7 @@ from EmailReader import EmailReader
 from Classifier import Classifier
 from FileMover import FileMover
 from Logger import Logger
-from metrics import load_true_labels, compute_metrics, print_report
+from Metrics import load_true_labels, compute_metrics, print_report
 import logging
 from MLClassifier import MLClassifier
 import ModelTrain

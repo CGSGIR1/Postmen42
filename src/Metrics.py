@@ -4,7 +4,7 @@ from pathlib import Path
 from collections import defaultdict
 
 
-def load_true_labels(csv_path: str) -> dict:
+def load_true_labels(csv_path):
     if not Path(csv_path).exists():
         print(f"Ошибка: файл {csv_path} не найден")
         return None
@@ -18,7 +18,7 @@ def load_true_labels(csv_path: str) -> dict:
     return true_labels
 
 
-def load_predicted_labels(output_folder: str) -> dict:
+def load_predicted_labels(output_folder):
     if not Path(output_folder).exists():
         print(f"Ошибка: папка {output_folder} не существует")
         return None
@@ -35,7 +35,7 @@ def load_predicted_labels(output_folder: str) -> dict:
     return predicted_labels
 
 
-def compute_metrics(true_labels: dict, predicted_labels: dict):
+def compute_metrics(true_labels, predicted_labels):
     all_categories = set(true_labels.values()) | set(predicted_labels.values())
     tp = defaultdict(int)
     fp = defaultdict(int)
