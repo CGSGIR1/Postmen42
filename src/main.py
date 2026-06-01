@@ -13,6 +13,7 @@ def main():
     parser.add_argument("--debug", action="store_true", help="режим debug")
     args = parser.parse_args()
     logger = Logger(args.debug)
+
     if not Path(args.input).exists():
         log.error(f"Директория {args.input} не найдена")
         return

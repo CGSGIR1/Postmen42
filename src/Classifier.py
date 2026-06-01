@@ -1,4 +1,5 @@
 import logging
+
 log = logging.getLogger(__name__)
 class Classifier:
     RULES = {
@@ -97,6 +98,8 @@ class Classifier:
         "client complaint", "пользователь не может",
     ],
 }
+    PRIORITY = ["Spam", "Urgent", "Repeat", "Tech", "Access",
+                "HR", "Finance", "Auto", "Docs", "Client"]
     BODY_COEFF = 2
     SUBJECT_COEFF = 1
     def _search(self, text, coeffs, coef_level):
@@ -120,17 +123,22 @@ class Classifier:
         if "no-reply" in email.sender:
             coeffs["Auto"] += 999
 
-        max_category = max(coeffs, key=coeffs.get)
+        max_score = max(coeffs.values())
 
-        if coeffs[max_category] > 1:
-            email_category = max_category
+        if max_score > 1:
+            for category in self.PRIORITY:
+                if coeffs[category] == max_score:
+                    email_category = category
+                    break
+        if coeffs["Repeat"] >= 2:
+            email_category = "Repeat"
         if coeffs["Urgent"] >= 2:
             email_category = "Urgent"
-        if coeffs["Spam"] >= 3:
+        if coeffs["Spam"] >= 2:
             email_category = "Spam"
         if email_category == "Unclear":
             log.warning(f"Для письма {email.source_path} не удалось определить категорию")
         else:
-            log.debug(f"Для письма {email.source_path} установлена категория: {email_category} с баллом: {coeffs[max_category]}")
+            log.debug(f"Для письма {email.source_path} установлена категория: {email_category} с баллом: {max_score}")
         return email_category
 

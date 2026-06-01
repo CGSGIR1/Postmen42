@@ -10,7 +10,7 @@ class Logger:
             level=level,
             format="%(asctime)s | %(name)s | %(levelname)s | %(message)s",
             handlers=[
-                logging.FileHandler("Emails.log", encoding="utf-8"),
+                logging.FileHandler("../Emails.log", encoding="utf-8"),
                 logging.StreamHandler()
             ]
         )
